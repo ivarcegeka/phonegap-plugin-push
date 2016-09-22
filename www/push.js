@@ -310,6 +310,10 @@ module.exports = {
         return new PushNotificationBuilder();
     },
 
+    clearRegistration: function(successCallback, errorCallback, options) {
+        exec(successCallback, errorCallback, 'PushNotification', 'unregister', [options]);
+    },
+
     hasPermission: function (successCallback, errorCallback) {
         exec(successCallback, errorCallback, 'PushNotification', 'hasPermission', []);
     },
