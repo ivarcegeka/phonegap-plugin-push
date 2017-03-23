@@ -16,6 +16,7 @@
   - [Bitcode](#bitcode)
   - [CocoaPods](#cocoapods)
     - [Common CocoaPod Installation issues](#common-cocoapod-installation-issues)
+    - [CocoaPod Disk Space](#cocoapod-disk-space)
 - [Additional Resources](#additional-resources)
 
 ## Installation Requirements
@@ -194,6 +195,8 @@ Alternatively, switch to another plugin that provides the same functionality but
 
 For the time being push support on the browser will only work using the PhoneGap push server.
 
+When you run `phonegap serve` to test browser push point your browser at `http://localhost:3000`. The browser push implementation uses the W3C Push Spec's implementation which relies on ServiceWorkers and ServiceWorkers can only be accessed via the `https` protocol or via `http://localhost`. Pointing your browser at `localhost` will be the easiest way to test.
+
 ### Browser Support
 
 Chrome  49+
@@ -254,6 +257,15 @@ Error: pod: Command failed with exit code 1
 ```
 
 Please run the command `pod repo update` and re-install the plugin.
+
+##### CocoaPod Disk Space
+
+Running `pod setup` can take over 1 GB of disk space and that can take quite some time to download over a slow internet connection. If you are having issues with disk space/network try this neat hack from @VinceOPS.
+
+```
+git clone --verbose --depth=1 https://github.com/CocoaPods/Specs.git ~/.cocoapods/repos/master
+pod setup --verbose
+```
 
 ## Additional Resources
 

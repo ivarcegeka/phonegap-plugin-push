@@ -34,17 +34,21 @@ var PushNotification = function (options, handlers) {
         if (result && typeof result.registrationId !== 'undefined') {
             that.emit('registration', result);
         } else if (result && result.additionalData && typeof result.additionalData.actionCallback !== 'undefined') {
-            var executeFunctionByName = function (functionName, context /*, args */) {
-                var args = Array.prototype.slice.call(arguments, 2);
-                var namespaces = functionName.split('.');
-                var func = namespaces.pop();
-                for (var i = 0; i < namespaces.length; i++) {
-                    context = context[namespaces[i]];
-                }
-                return context[func].apply(context, args);
+            var executeFuctionOrEmitEventByName = function(callbackName, context, arg) {
+              var namespaces = callbackName.split('.');
+              var func = namespaces.pop();
+              for (var i = 0; i < namespaces.length; i++) {
+                context = context[namespaces[i]];
+              }
+
+              if (typeof context[func] === 'function') {
+                context[func].call(context, arg);
+              } else {
+                that.emit(callbackName, arg);
+              }
             };
 
-            executeFunctionByName(result.additionalData.actionCallback, window, result);
+            executeFuctionOrEmitEventByName(result.additionalData.actionCallback, window, result);
         } else if (result) {
             that.emit('notification', result);
         }
@@ -248,7 +252,7 @@ PushNotification.prototype.clearAllNotifications = function (successCallback, er
 /**
  * Listen for an event.
  *
- * The following events are supported:
+ * Any event is supported, but the following are built-in:
  *
  *   - registration
  *   - notification
@@ -258,10 +262,11 @@ PushNotification.prototype.clearAllNotifications = function (successCallback, er
  * @param {Function} callback triggered on the event.
  */
 
-PushNotification.prototype.on = function (eventName, callback) {
-    if (this._handlers.hasOwnProperty(eventName)) {
-        this._handlers[eventName].push(callback);
+PushNotification.prototype.on = function(eventName, callback) {
+    if (!this._handlers.hasOwnProperty(eventName)) {
+        this._handlers[eventName] = [];
     }
+    this._handlers[eventName].push(callback);
 };
 
 /**
